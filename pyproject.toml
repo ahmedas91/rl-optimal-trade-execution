@@ -1,0 +1,17 @@
+[project]
+name = "rl-optimal-trade-execution"
+version = "0.1.0"
+description = "Optimal trade execution under changing liquidity: a finite MDP solved by value iteration"
+requires-python = ">=3.12"
+dependencies = [
+    "gymnasium>=1.0",
+    "ipykernel>=6.29",
+    "jupyterlab>=4.2",
+    "matplotlib>=3.9",
+    "nbconvert>=7.16",
+    "numpy>=2.0",
+    "pandas>=2.2",
+]
+
+[tool.uv]
+package = false
