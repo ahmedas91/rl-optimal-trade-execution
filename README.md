@@ -26,7 +26,7 @@ Expected cost of the whole order, by liquidity ratio:
 | 2 (base case)                | 15             | 15   | 75              | 0%                         |
 | 4                            | 11.88          | 12.5 | 62.5            | 4.95%                      |
 
-- **The policy does depend on liquidity.** It spreads the remaining lots evenly and rounds down in low liquidity and up in high liquidity. A 10-lot order over five periods never reaches a state where the two roundings differ (the boxed cells below).
+- **The policy does depend on liquidity.** It spreads the remaining lots evenly and rounds down in low liquidity and up in high liquidity. A 10-lot order over five periods never reaches a state where the two roundings differ (the boxed cells below are the states it reaches).
 - **Adapting pays when the two liquidity levels are far enough apart.** At a ratio of 4 the first trade is 3 lots in high liquidity and 1 lot in low liquidity, and the expected cost is 4.95% below TWAP's.
 - **A lower expected cost is not a lower cost on every path.** At ratio 4 the optimal policy costs more than TWAP on about 41% of the simulated paths.
 
