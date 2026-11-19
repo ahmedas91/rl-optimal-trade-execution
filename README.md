@@ -4,8 +4,6 @@ End-quarter project for **ADSP 32020 Reinforcement Learning** (University of Chi
 
 **Group 5:** Ahmad Mohammad, Luciano Handal, Robert Scott
 
-**Status:** working draft. The "Challenges" and "Lessons learned" parts of the conclusions are still to be written.
-
 ## Overview
 
 A trader must buy 10 lots within five periods. Trading is cheaper when the market is liquid, and liquidity switches at random between a low and a high regime. **Does a policy that adapts its trade sizes to the regime cost less than splitting the order equally (TWAP)?**
