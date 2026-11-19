@@ -12,7 +12,7 @@ A trader must buy 10 lots within five periods. Trading is cheaper when the marke
 
 We write the problem as a finite Markov decision process (MDP), solve it exactly with value iteration, and compare the computed policy with two baselines on the same 10,000 simulated liquidity paths.
 
-Everything is in one notebook, [`optimal_trade_execution.ipynb`](optimal_trade_execution.ipynb). The same notebook with all its outputs is exported to [`optimal_trade_execution.html`](optimal_trade_execution.html).
+Everything is in one notebook, [`optimal_trade_execution.ipynb`](optimal_trade_execution.ipynb).
 
 ## Result
 
@@ -77,7 +77,6 @@ A run rewrites `data/liquidity_paths.csv`, `results/optimal_policy.csv` and the 
 | Path                                                 | Content                                                                                                 |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | `optimal_trade_execution.ipynb`                    | The project: model, environment, solver, results and demonstration                                      |
-| `optimal_trade_execution.html`                     | The notebook exported to HTML with all its outputs                                                      |
 | `data/liquidity_paths.csv`                         | Raw data: the 10,000 simulated liquidity paths, one column per period (0 = low, 1 = high)               |
 | `results/optimal_policy.csv`                       | The computed policy and value of every state for liquidity ratios 1, 2 and 4 (regime 0 = low, 1 = high) |
 | `results/figures/`                                 | The figures of the notebook                                                                             |
