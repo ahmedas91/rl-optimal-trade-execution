@@ -10,7 +10,7 @@ A trader must buy 10 lots within five periods. Trading is cheaper when the marke
 
 We write the problem as a finite Markov decision process (MDP), solve it exactly with value iteration, and compare the computed policy with two baselines on the same 10,000 simulated liquidity paths.
 
-Everything is in one notebook, [`optimal_trade_execution.ipynb`](optimal_trade_execution.ipynb).
+The complete project is in [`optimal_trade_execution.ipynb`](optimal_trade_execution.ipynb). [`presentation_notes.md`](presentation_notes.md) provides the 20-minute speaking route, code explanations and technical questions.
 
 ## Result
 
@@ -34,6 +34,10 @@ The second figure shows how many more lots the policy buys in high liquidity tha
 
 ![Trade in high liquidity minus trade in low liquidity, for liquidity ratios 1, 2 and 4](results/figures/ratio_sensitivity.png)
 
+At ratio 4, the simulated saving averages **0.6178 cost units per path**, with an approximate 95% confidence interval of **0.5803 to 0.6553**. This interval describes uncertainty in the mean saving, not the range of individual outcomes: the optimal policy costs more than TWAP on **40.76%** of the paths. The next figure shows both the total-cost distributions and the paired savings (TWAP cost minus optimal cost).
+
+![Ratio-4 cost distributions and savings relative to TWAP on the same liquidity paths](results/figures/ratio4_cost_distribution.png)
+
 ## Problem formulation
 
 | Element            | Definition                                                                                                                                                                                                                                         |
@@ -45,7 +49,11 @@ The second figure shows how many more lots the policy buys in high liquidity tha
 | Transition         | $q' = q - a$ and $\tau' = \tau - 1$; the regime stays the same with probability $0.8$ and switches with probability $0.2$, whatever the trade                                                                                              |
 | Terminal condition | the episode ends when $q = 0$; the terminal value is $0$                                                                                                                                                                                       |
 
-The trader sees the regime, trades at that liquidity, and then the regime moves. The model has 110 states, and the regime is its only source of randomness. It is fully specified: nothing is estimated from market data, and the price is constant so that only liquidity matters.
+The trader sees the regime, trades at that liquidity, and then the regime moves if the order is unfinished. An episode has at most five trades and four regime moves; buying everything immediately ends it after the first trade.
+
+There are **100 decision states** with positive inventory: $5 \times 10 \times 2$. The positive-horizon tables contain **110 entries** because they also include $q = 0$ terminal entries. The `(6, 11, 2)` arrays add a $\tau = 0$ terminal layer, for **132 entries** in total; positive inventory at $\tau = 0$ is never reached because the last trade is forced. The environment can return a terminal observation with $q = 0$ before the deadline or with $\tau = q = 0$ at the deadline.
+
+The regime is the only source of randomness. The model is fully specified: nothing is estimated from market data, and the price is constant so that timing responds to liquidity, inventory and the deadline without price risk.
 
 ## Method
 
@@ -68,16 +76,40 @@ uv run jupyter lab optimal_trade_execution.ipynb
 
 `uv sync` creates `.venv` with Python 3.12 and the exact package versions recorded in `uv.lock`. Then run all cells from the top. The notebook needs no data download and no GPU, and it finishes in well under a minute.
 
+Alternatively, after cloning and entering the repository, use Python 3.12 and pip:
+
+```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m jupyterlab optimal_trade_execution.ipynb
+```
+
 A run rewrites `data/liquidity_paths.csv`, `results/optimal_policy.csv` and the figures. The random draws use a fixed seed, so the numbers are the same on every run with the locked package versions.
+
+## Presentation route
+
+The standalone notebook is the presentation. Supporting code starts collapsed while the outputs remain visible; all source is retained for inspection. Use the detailed speaking notes and code explanations in [`presentation_notes.md`](presentation_notes.md).
+
+| Elapsed time | Topic | Notebook sections |
+| --- | --- | --- |
+| 0–2 minutes | Problem and research question | 1 |
+| 2–5 minutes | Environment and one transition | 2 |
+| 5–9 minutes | Bellman update and convergence | 3 and 4.1 |
+| 9–16 minutes | Policy, baselines, sensitivity and pathwise risk | 4.2–4.6 |
+| 16–18 minutes | Agent walkthroughs | 5 |
+| 18–20 minutes | Conclusions, lessons and reproducibility | 6–7 |
+
+Allow the following five minutes for questions. Explain the displayed findings rather than reading every paragraph or code cell aloud.
 
 ## Repository contents
 
 | Path                                                 | Content                                                                                                 |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | `optimal_trade_execution.ipynb`                    | The project: model, environment, solver, results and demonstration                                      |
+| `presentation_notes.md`                           | Timed speaking route, explanation of every code cell and technical questions                            |
 | `data/liquidity_paths.csv`                         | Raw data: the 10,000 simulated liquidity paths, one column per period (0 = low, 1 = high)               |
 | `results/optimal_policy.csv`                       | The computed policy and value of every state for liquidity ratios 1, 2 and 4 (regime 0 = low, 1 = high) |
-| `results/figures/`                                 | The figures of the notebook                                                                             |
+| `results/figures/`                                 | Convergence, policies, value functions, baseline costs, ratio sensitivity, ratio-4 costs and savings, and episodes |
 | `pyproject.toml`, `uv.lock`, `.python-version` | The Python environment for uv                                                                           |
 | `requirements.txt`                                 | The same pinned versions for pip, exported from `uv.lock`                                             |
 
@@ -91,3 +123,5 @@ A run rewrites `data/liquidity_paths.csv`, `results/optimal_policy.csv` and the 
 6. Puterman, M. L. (1994). *Markov Decision Processes: Discrete Stochastic Dynamic Programming*. Wiley. https://doi.org/10.1002/9780470316887
 7. Sutton, R. S., & Barto, A. G. (2018). *Reinforcement Learning: An Introduction* (2nd ed.). MIT Press.
 8. Towers, M., Kwiatkowski, A., Balis, J., et al. (2025). Gymnasium: A standard interface for reinforcement learning environments. *Advances in Neural Information Processing Systems 38*, 163114–163129. https://doi.org/10.52202/085713-4916
+9. Azeredo, F. (2026). *Week 5, Lab exercise 03: Optimal control of execution costs*. ADSP 32020 Reinforcement Learning, University of Chicago. Course notes.
+10. Rao, A., & Jelvis, T. [*Optimal order execution example*](https://github.com/TikhonJelvis/RL-book/blob/master/rl/chapter9/optimal_order_execution.py). Code accompanying *Foundations of Reinforcement Learning with Applications in Finance*. Conceptual background for the finite-horizon execution formulation.
